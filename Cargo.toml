@@ -1,0 +1,57 @@
+[package]
+name = "loop-cli"
+version = "0.1.0"
+edition = "2021"
+description = "A minimalist, Rust-native agent harness with charm.sh-style TUI"
+license = "MIT"
+
+[[bin]]
+name = "loop"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+async-trait = "0.1"
+
+# CLI parsing
+clap = { version = "4", features = ["derive"] }
+
+# Terminal UI (charm.sh-style)
+crossterm = "0.28"
+ratatui = "0.29"
+lipgloss = { package = "charmed-lipgloss", version = "0.2.3" }
+dialoguer = { version = "0.11", features = ["fuzzy-select"] }
+console = "0.15"
+indicatif = "0.17"
+
+# Serialization & config
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# HTTP client for LLM APIs
+reqwest = { version = "0.12", features = ["json", "stream"] }
+reqwest-eventsource = "0.6"
+eventsource-stream = "0.2"
+
+# Utilities
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+dirs = "6"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+thiserror = "2"
+anyhow = "1"
+colored = "3"
+textwrap = "0.16"
+tiktoken-rs = "0.6"
+syntect = "5"
+
+# For plugin system
+which = "7"
+
+# For secure API key storage
+rpassword = "7"
+keyring = { version = "3.6.3", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
