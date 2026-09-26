@@ -14,7 +14,6 @@ loop manual    # full command reference
 > 34 source files · ~6,600 lines of Rust · 7.3 MB release binary
 > 
 
----
 
 #### Why Loop?
 
@@ -30,7 +29,6 @@ Most agent harnesses are either heavyweight frameworks that take over your stack
 
 ## Getting Started
 
----
 
 #### Prerequisites
 
@@ -84,7 +82,6 @@ loop ▸ refactor the parser and verify the patch -t2
 
 ## Capabilities
 
----
 
 #### Six LLM Providers
 
@@ -456,8 +453,6 @@ src/
 ```
 
 ## Roadmap
-
----
 
 - [x]  **MCP integration** — stdio JSON-RPC client, tool caching, Tool trait adapter
 - [x]  **OpenRouter provider** — verified API key and user-selected model slug
