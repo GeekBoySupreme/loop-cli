@@ -1,7 +1,5 @@
 # Loop CLI
 
----
-
 **Meet the loop cli ⎯ a minimalist, rust-native agent harness (agent and harness were not big enough terms yet, so I was calling it a semantic circuit navigator 😬)**
 
 Loop gives you a single binary that turns any LLM into a coding agent with filesystem access, tool execution, persistent memory, and git-aware version control — all from your terminal.
