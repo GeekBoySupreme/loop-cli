@@ -1,6 +1,8 @@
-# 🔁 Loop
+# Loop CLI
 
-**A minimalist, Rust-native agent harness.**
+---
+
+**Meet the loop cli ⎯ a minimalist, rust-native agent harness (agent and harness were not big enough terms yet, so I was calling it a semantic circuit navigator 😬)**
 
 Loop gives you a single binary that turns any LLM into a coding agent with filesystem access, tool execution, persistent memory, and git-aware version control — all from your terminal.
 
@@ -12,32 +14,33 @@ loop manual    # full command reference
 ```
 
 > 34 source files · ~6,600 lines of Rust · 7.3 MB release binary
+> 
 
 ---
 
-## Why Loop?
+#### Why Loop?
 
-Most agent harnesses are either heavyweight frameworks that take over your stack, or thin wrappers around a single provider's API. Loop is neither:
+Most agent harnesses are either heavyweight frameworks that take over your stack, or thin wrappers around a single provider’s API. Loop is neither:
 
 - **Provider-agnostic** — Switch between Claude, GPT-4o, Gemini, Llama (Groq), local Gemma (Ollama), and any OpenRouter model slug
 - **Memory that persists** — Checkpoints, directives, and semantic search survive across sessions
-- **Learns from your corrections** — When you tell it "no, do it this way," Loop records the directive and references it in future runs
+- **Learns from your corrections** — When you tell it “no, do it this way,” Loop records the directive and references it in future runs
 - **Git-native** — Optionally commits every accepted change with an LLM-generated semantic commit message
 - **MCP-enabled** — Connect to any Model Context Protocol server to extend the agent with external tools
 - **Extensible** — Write plugins in any language, or let the agent write them for itself
 - **Single binary** — No runtime, no daemon, no node_modules. Just `loop`.
 
----
-
 ## Getting Started
 
-### Prerequisites
+---
 
-- **Rust** (1.70+): [rustup.rs](https://rustup.rs)
-- At least one LLM API key (Anthropic, OpenAI, Google, Groq, or OpenRouter) — *or* [Ollama](https://ollama.com) for fully local operation
+#### Prerequisites
+
+- **Rust** (1.70+): [rustup.rs](https://rustup.rs/)
+- At least one LLM API key (Anthropic, OpenAI, Google, Groq, or OpenRouter) — *or* [Ollama](https://ollama.com/) for fully local operation
 - Charm-style colors, badges, and rounded panels are built in with the Rust Lip Gloss port. Optional: [Gum](https://github.com/charmbracelet/gum) and [Glow](https://github.com/charmbracelet/glow) add an enhanced header and Markdown rendering (`brew install gum glow`).
 
-### Install from Source
+#### Install from Source
 
 ```bash
 git clone https://github.com/yourname/loop-cli.git
@@ -47,7 +50,7 @@ cargo install --path .
 
 This installs the `loop` binary to `~/.cargo/bin/`.
 
-### First Run
+#### First Run
 
 ```bash
 loop init
@@ -69,9 +72,9 @@ After setup, just type:
 loop
 ```
 
-You're now in the interactive REPL. Type what you want done, and Loop will read your files, plan an approach, make changes, and verify the results.
+You’re now in the interactive REPL. Type what you want done, and Loop will read your files, plan an approach, make changes, and verify the results.
 
-### Quick Examples
+#### Quick Examples
 
 ```
 loop ▸ list the project structure and explain the architecture
@@ -81,14 +84,14 @@ loop ▸ review src/auth/ for security issues
 loop ▸ refactor the parser and verify the patch -t2
 ```
 
----
-
 ## Capabilities
 
-### 🤖 Six LLM Providers
+---
+
+#### Six LLM Providers
 
 | Provider | Models | How |
-|:---|:---|:---|
+| --- | --- | --- |
 | **Anthropic** | Claude Sonnet 4, Haiku 3.5 | API key |
 | **OpenAI** | GPT-4o, GPT-4o-mini | API key |
 | **Google Gemini** | Gemini 2.5 Pro, 2.5 Flash | API key |
@@ -102,61 +105,62 @@ During `loop init`, Loop verifies an OpenRouter key before asking for the full m
 
 API keys are never serialized to `config.toml`. Loop keeps provider/model metadata there with owner-only permissions and retrieves credentials into process memory only when needed. Existing plaintext keys are migrated to the operating system credential vault and removed from the TOML file on the next load.
 
-### 🔧 Six Built-in Tools
+#### Six Built-in Tools
 
 | Tool | Type | Description |
-|:---|:---|:---|
-| `read` | 🔍 Read-only | Read file contents with optional line range |
-| `write` | ⚡ Mutating | Create or overwrite files (auto-creates parent dirs) |
-| `edit` | ⚡ Mutating | Surgical find-and-replace (exact string match) |
-| `multi_edit` | ⚡ Mutating | Batch edits across multiple files in one atomic call |
-| `bash` | ⚡ Mutating | Execute shell commands with timeout and output truncation |
-| `list_dir` | 🔍 Read-only | Recursive directory listing with sizes |
+| --- | --- | --- |
+| `read` | Read-only | Read file contents with optional line range |
+| `write` | Mutating | Create or overwrite files (auto-creates parent dirs) |
+| `edit` | Mutating | Surgical find-and-replace (exact string match) |
+| `multi_edit` | Mutating | Batch edits across multiple files in one atomic call |
+| `bash` | Mutating | Execute shell commands with timeout and output truncation |
+| `list_dir` | Read-only | Recursive directory listing with sizes |
 
-Mutating tools require user approval by default. Disable with "YOLO mode" during `loop init`.
+Mutating tools require user approval by default. Disable with “YOLO mode” during `loop init`.
 
-### 📌 Markdown Checkpoints
+#### Markdown Checkpoints
 
 When you exit (`/quit`) or hit the iteration limit, Loop saves a checkpoint as a structured `.md` file:
 
 ```markdown
 ## ✅ DONE (completed — do NOT repeat)
-- [x] Read src/main.rs and understood the CLI dispatch
-- [x] Fixed the off-by-one error in pagination
+-[x] Read src/main.rs and understood the CLI dispatch
+-[x] Fixed the off-by-one error in pagination
 
 ## 🔄 DOING (context at suspension)
 Was implementing the new validation layer. Had just written
 the schema module and was about to wire it into the handler.
 
 ## 📋 NEXT (pending tasks — execute in order)
-1. Wire validation into the create_user handler
-2. Add tests for edge cases
-3. Run the full test suite
+1.Wire validation into the create_user handler
+2.Add tests for edge cases
+3.Run the full test suite
 ```
 
-On your next `loop` session, you're asked if you want to resume — the agent picks up exactly where it left off, knowing what's done, what's in progress, and what's next.
+On your next `loop` session, you’re asked if you want to resume — the agent picks up exactly where it left off, knowing what’s done, what’s in progress, and what’s next.
 
-### 📋 Directives System
+#### Directives System
 
-When you tell Loop something specific — *"no, use `HashMap` not `BTreeMap`"* or *"fix it by adding a null check before the dereference"* — Loop detects this as a **directive** and records:
+When you tell Loop something specific — *“no, use `HashMap` not `BTreeMap`”* or *“fix it by adding a null check before the dereference”* — Loop detects this as a **directive** and records:
 
 - **Fingerprint**: a short identifier like `null-deref-auth-handler`
 - **What you said**: the exact instruction
 - **What was done**: the action taken
-- **Outcome**: ✅ Worked / ❌ Didn't work / ⚠️ Partial
+- **Outcome**: ✅ Worked / ❌ Didn’t work / ⚠️ Partial
 
-These are stored in `~/.loop/directives.md`. On every future run, Loop searches this file for relevant past directives and injects them into context. If something **didn't work before**, the agent is explicitly warned not to repeat it.
+These are stored in `~/.loop/directives.md`. On every future run, Loop searches this file for relevant past directives and injects them into context. If something **didn’t work before**, the agent is explicitly warned not to repeat it.
 
-### 🧠 Semantic Memory Search
+#### Semantic Memory Search
 
 At startup, Loop builds a TF-IDF index over all saved memories:
+
 - All directives (`~/.loop/directives.md`)
 - All checkpoints (`~/.loop/checkpoints/*.md`)
 - All skill files (`~/.loop/skills/*.md`)
 
-Before each task, it performs cosine similarity search against the user's input and injects the top-3 relevant memories into the system prompt. No external API needed — runs entirely locally.
+Before each task, it performs cosine similarity search against the user’s input and injects the top-3 relevant memories into the system prompt. No external API needed — runs entirely locally.
 
-### 📝 Git Auto-Checkpoint
+#### Git Auto-Checkpoint
 
 When enabled and operating inside a git repository:
 
@@ -173,8 +177,9 @@ When enabled and operating inside a git repository:
 ```
 
 > **Requirement**: The working directory must have `git init` already run. Loop will not initialize git for you — it respects your existing workflow.
+> 
 
-### 🔌 Plugin System
+#### Plugin System
 
 Loop discovers any executable named `loop-plugin-*` on `$PATH` or in `~/.loop/plugins/`:
 
@@ -182,23 +187,23 @@ Loop discovers any executable named `loop-plugin-*` on `$PATH` or in `~/.loop/pl
 # Discovery: returns JSON manifest
 loop-plugin-docker --manifest
 
-# Execution: params on stdin, result on stdout  
+# Execution: params on stdin, result on stdout
 echo '{"image":"nginx"}' | loop-plugin-docker --execute docker_run
 ```
 
 The registry refreshes at the start of every task and inference turn. Plugins installed by you, or written and compiled by the agent with `bash` and `write`, become available without restarting Loop.
 
-### 🎯 Skill Routing
+#### Skill Routing
 
 Skills are `.md` files in `~/.loop/skills/` with trigger keywords. Loop routes each user input to the best-matching skill:
 
 - **general.md** — default coding assistant
-- **debug.md** — triggered by "fix", "bug", "error", "crash"
-- **review.md** — triggered by "review", "audit", "analyze"
+- **debug.md** — triggered by “fix”, “bug”, “error”, “crash”
+- **review.md** — triggered by “review”, “audit”, “analyze”
 
 You can add custom skills — any `.md` file in the skills directory with the right header format will be auto-discovered.
 
-### 🔌 MCP Server Integration
+#### MCP Server Integration
 
 Loop speaks the [Model Context Protocol](https://spec.modelcontextprotocol.io/) — connect to any MCP server to extend the agent with external tools:
 
@@ -216,6 +221,7 @@ loop init
 ```
 
 On connection, Loop:
+
 1. Spawns the MCP server via **stdio transport**
 2. Sends `initialize` + `tools/list` JSON-RPC messages
 3. **Caches tool definitions** to `~/.loop/mcp/<server>.json`
@@ -231,13 +237,13 @@ loop mcp refresh
 loop mcp call --server filesystem --tool list_directory --arguments '{"path":"."}'
 ```
 
-Server commands, arguments, and environment variables live in the `mcp_servers` entries in `~/.loop/config.toml`, alongside the rest of Loop's configuration.
+Server commands, arguments, and environment variables live in the `mcp_servers` entries in `~/.loop/config.toml`, alongside the rest of Loop’s configuration.
 
-### Charm Terminal Rendering
+#### Charm Terminal Rendering
 
-Loop uses the Rust port of Charm's Lip Gloss for its built-in palette, highlighted badges, rounded panels, command manual, and REPL status views. When the `gum` and `glow` commands are available, Gum supplies an enhanced header and Glow renders assistant Markdown and direct MCP results. The full-screen dashboard uses a matching Ratatui theme.
+Loop uses the Rust port of Charm’s Lip Gloss for its built-in palette, highlighted badges, rounded panels, command manual, and REPL status views. When the `gum` and `glow` commands are available, Gum supplies an enhanced header and Glow renders assistant Markdown and direct MCP results. The full-screen dashboard uses a matching Ratatui theme.
 
-### ✨ Animated Thinking & Real-time Tokens
+#### Animated Thinking & Real-time Tokens
 
 While the LLM is thinking, Loop shows an animated spinner with live token usage:
 
@@ -245,20 +251,20 @@ While the LLM is thinking, Loop shows an animated spinner with live token usage:
   ⏳ pondering · 2.3s │ 12.4k↓ 350↑
 ```
 
-The spinner cycles through 4 frame styles (DNA helix, orbit, braille wave, bar wave) and rotates flavor text ("thinking", "reasoning", "analyzing", "synthesizing"...). The `↓` and `↑` counters show cumulative input/output tokens in real time.
+The spinner cycles through 4 frame styles (DNA helix, orbit, braille wave, bar wave) and rotates flavor text (“thinking”, “reasoning”, “analyzing”, “synthesizing”…). The `↓` and `↑` counters show cumulative input/output tokens in real time.
 
-### Iterative Thinking Mode
+#### Iterative Thinking Mode
 
 Append a thinking suffix to a REPL query or one-shot prompt to request self-review passes:
 
-```text
+```
 loop ▸ fix the checkout race and validate the patch -t
 loop ▸ redesign this parser without changing its public API -t3
 ```
 
-`-t` and `-t1` run one pass; `-t2` and `-t3` run two or three. Values above three are rejected. Loop first completes the task, scans relevant saved directives, asks the model to generate concrete review questions about correctness, code behavior, edge cases, maintainability, patches, and validation, then feeds that guidance into another tool-capable implementation cycle. Intermediate prose stays hidden and the final pass returns one consolidated answer. Each level adds at least two model calls and therefore increases latency and API usage.
+- `t` and `t1` run one pass; `t2` and `t3` run two or three. Values above three are rejected. Loop first completes the task, scans relevant saved directives, asks the model to generate concrete review questions about correctness, code behavior, edge cases, maintainability, patches, and validation, then feeds that guidance into another tool-capable implementation cycle. Intermediate prose stays hidden and the final pass returns one consolidated answer. Each level adds at least two model calls and therefore increases latency and API usage.
 
-### ⚡ Parallel Task Execution
+#### Parallel Task Execution
 
 When you give Loop a request with multiple independent subtasks, it automatically decomposes and runs them in parallel:
 
@@ -279,6 +285,7 @@ loop ▸ add input validation to create_user, update_user, and delete_user endpo
 ```
 
 How it works:
+
 1. **Planning** — The LLM analyzes the request and returns a structured JSON plan
 2. **Dependency check** — Only truly independent tasks (no data dependencies) are parallelized
 3. **Parallel dispatch** — Each subtask gets its own tokio task with independent inference loop
@@ -286,12 +293,13 @@ How it works:
 5. **Merge** — Results are merged back into the main conversation context
 
 > **Safety**: Tasks with `depends_on` set are excluded from parallel execution. Simple/singular requests skip planning entirely — no overhead.
-
----
+> 
 
 ## Command Reference
 
-### CLI Commands
+---
+
+#### CLI Commands
 
 ```
 loop                         Start the interactive REPL (default)
@@ -304,7 +312,7 @@ loop --help                  Show CLI help
 loop --version               Print version
 ```
 
-### REPL Commands
+#### REPL Commands
 
 ```
 /help       Show REPL commands
@@ -315,9 +323,9 @@ loop --version               Print version
 /quit       Save checkpoint and exit (/exit, /q also work)
 ```
 
----
-
 ## Architecture
+
+---
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -346,12 +354,12 @@ loop --version               Print version
        └────────────────────────────┘    └──────────────────┘
 ```
 
-### Double-Loop Design
+#### Double-Loop Design
 
 - **Outer Loop** — orchestrates the full task: classifies input, searches memories, selects skill, manages context, handles checkpointing, records directives, triggers git commits
-- **Inner Loop** — drives LLM inference: sends messages → receives response → executes tool calls → feeds results back → repeats until the model says "done" or hits the iteration cap
+- **Inner Loop** — drives LLM inference: sends messages → receives response → executes tool calls → feeds results back → repeats until the model says “done” or hits the iteration cap
 
-### Data Flow (Per Task)
+#### Data Flow (Per Task)
 
 ```mermaid
 sequenceDiagram
@@ -386,12 +394,10 @@ sequenceDiagram
     Engine->>Directives: save directive
 ```
 
----
-
 ## File Locations
 
 | Path | Purpose |
-|:---|:---|
+| --- | --- |
 | `~/.loop/config.toml` | Provider/model metadata and settings (no API keys) |
 | `~/.loop/checkpoints/*.md` | Session checkpoints (Done / Doing / Next) |
 | `~/.loop/checkpoints/*.json` | Machine-readable checkpoint companions |
@@ -400,8 +406,6 @@ sequenceDiagram
 | `~/.loop/skills/*.md` | Skill profiles (general, debug, review, custom) |
 | `~/.loop/mcp/*.json` | Cached MCP tool definitions |
 | `~/.loop/plugins/` | Plugin directory |
-
----
 
 ## Project Structure
 
@@ -453,24 +457,18 @@ src/
     └── mod.rs              # CLI plugin discovery & execution
 ```
 
----
-
 ## Roadmap
 
-- [x] **MCP integration** — stdio JSON-RPC client, tool caching, Tool trait adapter
-- [x] **OpenRouter provider** — verified API key and user-selected model slug
-- [x] **Iterative thinking mode** — directive-aware self-review with `-t` through `-t3`
-- [x] **Real-time token display** — animated thinking spinner with live token counters
-- [x] **Multi-file edit tool** — atomic batch edits across files via `multi_edit`
-- [x] **Parallel execution** — auto-decompose + parallel dispatch for independent subtasks
-- [ ] **Streaming responses** — token-by-token display in the REPL
-- [x] **Richer TUI** — interactive `ratatui` dashboard with split panes and status bar (`/status`)
-- [ ] **Embedding model upgrade** — use a local embedding model (via Ollama) for semantic search instead of TF-IDF
-- [x] **Plugin hot-reload** — detect new plugins before each task and inference turn
-- [ ] **Session history** — browse and search past sessions
-
 ---
 
-## License
-
-MIT
+- [x]  **MCP integration** — stdio JSON-RPC client, tool caching, Tool trait adapter
+- [x]  **OpenRouter provider** — verified API key and user-selected model slug
+- [x]  **Iterative thinking mode** — directive-aware self-review with `t` through `t3`
+- [x]  **Real-time token display** — animated thinking spinner with live token counters
+- [x]  **Multi-file edit tool** — atomic batch edits across files via `multi_edit`
+- [x]  **Parallel execution** — auto-decompose + parallel dispatch for independent subtasks
+- [ ]  **Streaming responses** — token-by-token display in the REPL
+- [x]  **Richer TUI** — interactive `ratatui` dashboard with split panes and status bar (`/status`)
+- [ ]  **Embedding model upgrade** — use a local embedding model (via Ollama) for semantic search instead of TF-IDF
+- [x]  **Plugin hot-reload** — detect new plugins before each task and inference turn
+- [ ]  **Session history** — browse and search past sessions
