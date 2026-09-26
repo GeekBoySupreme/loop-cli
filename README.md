@@ -27,6 +27,9 @@ Most agent harnesses are either heavyweight frameworks that take over your stack
 - **Extensible** — Write plugins in any language, or let the agent write them for itself
 - **Single binary** — No runtime, no daemon, no node_modules. Just `loop`.
 
+
+
+
 ## Getting Started
 
 
@@ -80,6 +83,9 @@ loop ▸ review src/auth/ for security issues
 loop ▸ refactor the parser and verify the patch -t2
 ```
 
+
+
+
 ## Capabilities
 
 
@@ -100,6 +106,7 @@ During `loop init`, Loop verifies an OpenRouter key before asking for the full m
 
 API keys are never serialized to `config.toml`. Loop keeps provider/model metadata there with owner-only permissions and retrieves credentials into process memory only when needed. Existing plaintext keys are migrated to the operating system credential vault and removed from the TOML file on the next load.
 
+
 #### Six Built-in Tools
 
 | Tool | Type | Description |
@@ -112,6 +119,7 @@ API keys are never serialized to `config.toml`. Loop keeps provider/model metada
 | `list_dir` | Read-only | Recursive directory listing with sizes |
 
 Mutating tools require user approval by default. Disable with “YOLO mode” during `loop init`.
+
 
 #### Markdown Checkpoints
 
@@ -134,6 +142,7 @@ the schema module and was about to wire it into the handler.
 
 On your next `loop` session, you’re asked if you want to resume — the agent picks up exactly where it left off, knowing what’s done, what’s in progress, and what’s next.
 
+
 #### Directives System
 
 When you tell Loop something specific — *“no, use `HashMap` not `BTreeMap`”* or *“fix it by adding a null check before the dereference”* — Loop detects this as a **directive** and records:
@@ -145,6 +154,7 @@ When you tell Loop something specific — *“no, use `HashMap` not `BTreeMap`�
 
 These are stored in `~/.loop/directives.md`. On every future run, Loop searches this file for relevant past directives and injects them into context. If something **didn’t work before**, the agent is explicitly warned not to repeat it.
 
+
 #### Semantic Memory Search
 
 At startup, Loop builds a TF-IDF index over all saved memories:
@@ -154,6 +164,7 @@ At startup, Loop builds a TF-IDF index over all saved memories:
 - All skill files (`~/.loop/skills/*.md`)
 
 Before each task, it performs cosine similarity search against the user’s input and injects the top-3 relevant memories into the system prompt. No external API needed — runs entirely locally.
+
 
 #### Git Auto-Checkpoint
 
@@ -174,6 +185,7 @@ When enabled and operating inside a git repository:
 > **Requirement**: The working directory must have `git init` already run. Loop will not initialize git for you — it respects your existing workflow.
 > 
 
+
 #### Plugin System
 
 Loop discovers any executable named `loop-plugin-*` on `$PATH` or in `~/.loop/plugins/`:
@@ -188,6 +200,7 @@ echo '{"image":"nginx"}' | loop-plugin-docker --execute docker_run
 
 The registry refreshes at the start of every task and inference turn. Plugins installed by you, or written and compiled by the agent with `bash` and `write`, become available without restarting Loop.
 
+
 #### Skill Routing
 
 Skills are `.md` files in `~/.loop/skills/` with trigger keywords. Loop routes each user input to the best-matching skill:
@@ -197,6 +210,7 @@ Skills are `.md` files in `~/.loop/skills/` with trigger keywords. Loop routes e
 - **review.md** — triggered by “review”, “audit”, “analyze”
 
 You can add custom skills — any `.md` file in the skills directory with the right header format will be auto-discovered.
+
 
 #### MCP Server Integration
 
@@ -234,9 +248,11 @@ loop mcp call --server filesystem --tool list_directory --arguments '{"path":"."
 
 Server commands, arguments, and environment variables live in the `mcp_servers` entries in `~/.loop/config.toml`, alongside the rest of Loop’s configuration.
 
+
 #### Charm Terminal Rendering
 
 Loop uses the Rust port of Charm’s Lip Gloss for its built-in palette, highlighted badges, rounded panels, command manual, and REPL status views. When the `gum` and `glow` commands are available, Gum supplies an enhanced header and Glow renders assistant Markdown and direct MCP results. The full-screen dashboard uses a matching Ratatui theme.
+
 
 #### Animated Thinking & Real-time Tokens
 
@@ -248,6 +264,7 @@ While the LLM is thinking, Loop shows an animated spinner with live token usage:
 
 The spinner cycles through 4 frame styles (DNA helix, orbit, braille wave, bar wave) and rotates flavor text (“thinking”, “reasoning”, “analyzing”, “synthesizing”…). The `↓` and `↑` counters show cumulative input/output tokens in real time.
 
+
 #### Iterative Thinking Mode
 
 Append a thinking suffix to a REPL query or one-shot prompt to request self-review passes:
@@ -258,6 +275,7 @@ loop ▸ redesign this parser without changing its public API -t3
 ```
 
 - `t` and `t1` run one pass; `t2` and `t3` run two or three. Values above three are rejected. Loop first completes the task, scans relevant saved directives, asks the model to generate concrete review questions about correctness, code behavior, edge cases, maintainability, patches, and validation, then feeds that guidance into another tool-capable implementation cycle. Intermediate prose stays hidden and the final pass returns one consolidated answer. Each level adds at least two model calls and therefore increases latency and API usage.
+
 
 #### Parallel Task Execution
 
